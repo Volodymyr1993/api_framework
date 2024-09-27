@@ -26,25 +26,30 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Run tests
-      # Run tests but always continue to the next step, regardless of the outcome
+    - name: Run tests and generate report
+      # Run tests, save the result of pytest in a variable
+      id: pytest
       run: |
-        pytest --cov=tests --cov-report=xml --html=report.html || true
-
-    - name: List files for debugging
-      # Optional step to list files and verify report generation
-      run: ls -R
+        pytest --cov=tests --cov-report=xml --html=report.html
+      continue-on-error: true
 
     - name: Upload test report
-      if: always() # Ensure this step runs regardless of previous steps' outcomes
+      # Always upload the report regardless of the test result
+      if: always()
       uses: actions/upload-artifact@v3
       with:
         name: test-report
         path: report.html
 
     - name: Upload coverage report
-      if: always() # Ensure this step runs regardless of previous steps' outcomes
+      if: always()
       uses: actions/upload-artifact@v3
       with:
         name: coverage-report
         path: coverage.xml
+
+    - name: Fail the workflow if tests failed
+      if: steps.pytest.outcome != 'success'
+      run: |
+        echo "Tests failed, failing the workflow."
+        exit 1
