@@ -42,3 +42,6 @@ jobs:
       with:
         name: coverage-report
         path: coverage.xml
+
+    - name: List files
+      run: ls -R
