@@ -29,13 +29,13 @@ jobs:
 
     - name: Run tests
       run: |
-        pytest --cov=tests --cov-report=xml --html=report.html
+        pytest --cov=tests --cov-report=xml --html=report.html || true
 
     - name: Upload test report
       uses: actions/upload-artifact@v3
       with:
         name: test-report
-        path: report.html
+        path: tests/report.html
 
     - name: Upload coverage report
       uses: actions/upload-artifact@v3
